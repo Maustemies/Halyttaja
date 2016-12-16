@@ -1,5 +1,10 @@
 # Halyttaja
 
+## Description
+This application is designed to be a safe guard for vehicular confrontations.
+The driver, before making the trip, can start the software which monitors the acceleration sensors of the phone.
+If the acceleration sensors detect a large collision, an alarm is started and if not cancelled, a notification is propagated to the authorities.
+
 ## Requirements
 * A great enough shake or a push applied to the phone generates an alarm.
 * The alarm lasts for 60 seconds if not canceled by the user.
