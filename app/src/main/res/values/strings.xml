@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">Halyttaja</string>
+
+    <!-- Button cases -->
+    <string name="buttonStart">Aloita</string>
+    <string name="buttonStop">Pysäytä</string>
+
+    <!-- Status text cases -->
+    <string name="textAccidentDetected">Törmäys havaittu!</string>
+    <string name="textAccidentReported">Hätäkeskukseen ilmoitettu - apu on tulossa!</string>
+    <string name="textAccidentDetectionOn">Törmäyksen seuraaminen on päällä</string>
+    <string name="textAccidentDetectionOff">Törmäyksen seuraaminen on pois päältä</string>
+    <string name="textAlarmTimeLeft">Hälytyksen aikaa jäljellä %1$d sekuntia</string>
+
+    <!-- Advice text cases -->
+    <string name="textAdvicePressStartToBeginDetection">Paina Aloita - aloita törmäyksen seuraaminen</string>
+    <string name="textAdvicePressStopToStopDetection">Paina Pysäytä - pysäytä hälytys</string>
 </resources>
