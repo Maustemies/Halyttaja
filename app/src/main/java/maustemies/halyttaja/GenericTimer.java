@@ -33,15 +33,15 @@ public class GenericTimer extends Thread {
         super.start();
     }
 
-    private boolean threadRunning = false;
+    private boolean functionalityOn = false;
     /**
      * Custom method to start the thread. Calls the super.start() but sets an internal flag which is used to stop the thread.
      */
     public void Start() {
         Log.d(LOG_TAG_GENERIC_TIMER, "Start()");
 
-        if(threadRunning) return;
-        threadRunning = true;
+        if(functionalityOn) return;
+        functionalityOn = true;
     }
     /**
      * Changes the internal flag which is used to stop the thread.
@@ -49,7 +49,7 @@ public class GenericTimer extends Thread {
     public void Stop() {
         Log.d(LOG_TAG_GENERIC_TIMER, "Stop()");
 
-        threadRunning = false;
+        functionalityOn = false;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class GenericTimer extends Thread {
         Log.d(LOG_TAG_GENERIC_TIMER, "run()");
 
         while(true) {
-            if (threadRunning) {
+            if (functionalityOn) {
                 try {
                     sleep(500);
                     mGenericTimerInterface.OnGenericTimerTick(idCode);

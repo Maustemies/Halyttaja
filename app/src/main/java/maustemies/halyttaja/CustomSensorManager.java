@@ -69,15 +69,15 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
         mCustomSensorManagerInterface.OnAccidentDetectionStarted();
     }
 
-    private boolean threadRunning = false;
+    private boolean functionalityOn = false;
     /**
      * Custom method to start the thread. Calls the super.start() but sets an internal flag which is used to stop the thread.
      */
     private void Start() {
         Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "Start()");
 
-        if(threadRunning) return;
-        threadRunning = true;
+        if(functionalityOn) return;
+        functionalityOn = true;
     }
     /**
      * Changes the internal flag which is used to stop the thread.
@@ -85,7 +85,7 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
     private void Stop() {
         Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "Stop()");
 
-        threadRunning = false;
+        functionalityOn = false;
     }
 
     @Override
@@ -93,7 +93,7 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
         Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "run()");
 
         while(true) {
-            if(newData && threadRunning) {
+            if(newData && functionalityOn) {
                 // Iterate through the accelerationValues to see if there is an accident
                 // TODO: Think of/implement the real, applicable, algorithm
                 float changesX = 0.0f;

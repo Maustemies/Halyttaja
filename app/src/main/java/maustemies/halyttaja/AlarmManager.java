@@ -53,15 +53,15 @@ public class AlarmManager extends Thread {
         super.start();
     }
 
-    private boolean threadRunning = false;
+    private boolean functionalityOn = false;
     /**
      * Custom method to start the thread. Calls the super.start() but sets an internal flag which is used to stop the thread.
      */
     private void Start() {
         Log.d(LOG_TAG_ALARM_MANAGER, "Start()");
 
-        if(threadRunning) return;
-        threadRunning = true;
+        if(functionalityOn) return;
+        functionalityOn = true;
     }
     /**
      * Changes the internal flag which is used to stop the thread.
@@ -69,7 +69,7 @@ public class AlarmManager extends Thread {
     private void Stop() {
         Log.d(LOG_TAG_ALARM_MANAGER, "Stop()");
 
-        threadRunning = false;
+        functionalityOn = false;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class AlarmManager extends Thread {
         Log.d(LOG_TAG_ALARM_MANAGER, "run()");
 
         while(true) {
-            if(threadRunning) {
+            if(functionalityOn) {
                 switch (alarmStatus) {
                     case IDLE: {
                         try {
