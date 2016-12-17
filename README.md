@@ -1,5 +1,9 @@
 # H&auml;lytt&auml;j&auml;
 
+![Beginningscreen](https://github.com/Maustemies/Halyttaja/raw/master/Images/Screenshot_2016-12-17-23-14-27.png)
+![After pressing start](https://github.com/Maustemies/Halyttaja/raw/master/Images/Screenshot_2016-12-17-23-14-32.png)
+![Background blinks and the alarm/ringtone sounds when an accident is detected](https://github.com/Maustemies/Halyttaja/raw/master/Images/Screenshot_2016-12-17-23-14-40.png)
+
 ## Description
 This application is designed to be a safe guard for vehicular confrontations.<br />
 The driver, before making the trip, can start the software which monitors the acceleration sensors of the phone.<br />
