@@ -29,6 +29,8 @@ public class GenericTimer extends Thread {
         this.idCode = idCode;
         this.delay = delay;
         mGenericTimerInterface = genericTimerInterface;
+
+        super.start();
     }
 
     private boolean threadRunning = false;
@@ -40,7 +42,6 @@ public class GenericTimer extends Thread {
 
         if(threadRunning) return;
         threadRunning = true;
-        super.start();
     }
     /**
      * Changes the internal flag which is used to stop the thread.
@@ -55,13 +56,15 @@ public class GenericTimer extends Thread {
     public void run() {
         Log.d(LOG_TAG_GENERIC_TIMER, "run()");
 
-        while(threadRunning) {
-            try {
-                sleep(500);
-                mGenericTimerInterface.OnGenericTimerTick(idCode);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.w("BackgroundBlinker", "Error in BackgroundBlinker thread: " + e.toString());
+        while(true) {
+            if (threadRunning) {
+                try {
+                    sleep(500);
+                    mGenericTimerInterface.OnGenericTimerTick(idCode);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.w("BackgroundBlinker", "Error in BackgroundBlinker thread: " + e.toString());
+                }
             }
         }
     }

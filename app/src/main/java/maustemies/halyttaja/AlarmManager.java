@@ -49,23 +49,24 @@ public class AlarmManager extends Thread {
         if(alarmUri == null) alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
 
         ringtone = RingtoneManager.getRingtone(mContext, alarmUri);
+
+        super.start();
     }
 
     private boolean threadRunning = false;
     /**
      * Custom method to start the thread. Calls the super.start() but sets an internal flag which is used to stop the thread.
      */
-    public void Start() {
+    private void Start() {
         Log.d(LOG_TAG_ALARM_MANAGER, "Start()");
 
         if(threadRunning) return;
         threadRunning = true;
-        super.start();
     }
     /**
      * Changes the internal flag which is used to stop the thread.
      */
-    public void Stop() {
+    private void Stop() {
         Log.d(LOG_TAG_ALARM_MANAGER, "Stop()");
 
         threadRunning = false;
@@ -75,58 +76,58 @@ public class AlarmManager extends Thread {
     public void run() {
         Log.d(LOG_TAG_ALARM_MANAGER, "run()");
 
-        while(threadRunning) {
-            switch (alarmStatus) {
-                case IDLE:
-                {
-                    try {
-                        sleep(500);
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                        Log.w("AlarmManager", "Error in AlarmManager thread: " + e.toString());
-                    }
-                    break;
-                }
-                case TIMER_TO_BE_STARTED:
-                {
-                    ringtone.play();
-                    alarmStatus = AlarmStatus.TIMER_RUNNING;
-                    break;
-                }
-                case TIMER_TO_BE_STOPPED:
-                {
-                    ringtone.stop();
-                    alarmStatus = AlarmStatus.IDLE;
-                    break;
-                }
-                case TIMER_RUNNING:
-                {
-                    try {
-                        sleep(1000);
-                        secondsToWait--;
-                        if(secondsToWait <= 0) {
-                            secondsToWait = SECONDS_TO_WAIT_FOR_CANCELLATION;
-                            alarmStatus = AlarmStatus.TIMER_EXPIRED;
+        while(true) {
+            if(threadRunning) {
+                switch (alarmStatus) {
+                    case IDLE: {
+                        try {
+                            sleep(500);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.w("AlarmManager", "Error in AlarmManager thread: " + e.toString());
                         }
-                        else {
+                        break;
+                    }
+                    case TIMER_TO_BE_STARTED: {
+                        Log.d(LOG_TAG_ALARM_MANAGER, "run() case TIMER_TO_BE_STARTED");
+
+                        ringtone.play();
+                        alarmStatus = AlarmStatus.TIMER_RUNNING;
+                        break;
+                    }
+                    case TIMER_TO_BE_STOPPED: {
+                        Log.d(LOG_TAG_ALARM_MANAGER, "run() case TIMER_TO_BE_STOPPED");
+
+                        ringtone.stop();
+                        alarmStatus = AlarmStatus.IDLE;
+                        secondsToWait = SECONDS_TO_WAIT_FOR_CANCELLATION;
+                        break;
+                    }
+                    case TIMER_RUNNING: {
+                        Log.d(LOG_TAG_ALARM_MANAGER, "run() case TIMER_RUNNING");
+
+                        try {
+                            sleep(1000);
+                            secondsToWait--;
+                            if (secondsToWait <= 0) {
+                                secondsToWait = SECONDS_TO_WAIT_FOR_CANCELLATION;
+                                alarmStatus = AlarmStatus.TIMER_EXPIRED;
+                            }
                             mAlarmManagerInterface.OnAlarmTick(secondsToWait);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.w("AlarmManager", "Error in AlarmManager thread: " + e.toString());
                         }
+                        break;
                     }
-                    catch (Exception e)  {
-                        e.printStackTrace();
-                        Log.w("AlarmManager", "Error in AlarmManager thread: " + e.toString());
+                    case TIMER_EXPIRED: {
+                        mAlarmManagerInterface.OnAlarmExpired();
+                        alarmStatus = AlarmStatus.TIMER_TO_BE_STOPPED;
+                        break;
                     }
-                    break;
+                    default:
+                        break;
                 }
-                case TIMER_EXPIRED:
-                {
-                    ringtone.stop();
-                    alarmStatus = AlarmStatus.IDLE;
-                    mAlarmManagerInterface.OnAlarmExpired();
-                    break;
-                }
-                default: break;
             }
         }
     }
@@ -135,6 +136,7 @@ public class AlarmManager extends Thread {
         Log.d(LOG_TAG_ALARM_MANAGER, "StartAlarm()");
 
         alarmStatus = AlarmStatus.TIMER_TO_BE_STARTED;
+        Start();
     }
 
     public void StopAlarm() {

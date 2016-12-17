@@ -91,14 +91,14 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
     public void OnAccidentDetectionStopped() {
         Log.d(LOG_TAG_MAIN_ACTIVITY, "OnAccidentDetectionStopped()");
 
+        userInitiatedDetection = false;
+
         if(alarmManager != null) alarmManager.StopAlarm();
         if(backgroundBlinker != null) backgroundBlinker.Stop();
         showNormalColor = true;
 
         UiOnAccidentDetectionTurnedOff();
         UiUpdateAdvicePressStartToBegin();
-
-        userInitiatedDetection = false;
     }
 
     private void OnButtonStartStopClicked() {
@@ -148,6 +148,12 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         textViewStatus.setText(timeLeftString);
     }
 
+    private void UiOnAlarmExpired() {
+        Log.d(LOG_TAG_MAIN_ACTIVITY, "UiOnAlarmExpired()");
+
+        textViewStatus.setText(R.string.textAccidentUnderReporting);
+    }
+
     private void UiUpdateAdvicePressStartToBegin() {
         Log.d(LOG_TAG_MAIN_ACTIVITY, "UiUpdateAdvicePressStartToBegin()");
 
@@ -183,11 +189,19 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         Log.d(LOG_TAG_MAIN_ACTIVITY, "OnAlarmExpired()");
 
         // TODO: Start accident reporting
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                UiOnAlarmExpired();
+            }
+        });
     }
 
     @Override
     public void OnAlarmTick(final int secondsLeft) {
         Log.d(LOG_TAG_MAIN_ACTIVITY, "OnAlarmTick(final int) with secondsLeft = " + secondsLeft);
+
+        if(!userInitiatedDetection) return;
 
         runOnUiThread(new Runnable() {
             @Override
@@ -215,6 +229,8 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
                         relativeLayoutBackground.setBackgroundColor(getResources().getColor(colorCode));
                     }
                 });
+
+                break;
             }
             default:
             {

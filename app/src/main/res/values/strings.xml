@@ -7,6 +7,7 @@
 
     <!-- Status text cases -->
     <string name="textAccidentDetected">Törmäys havaittu!</string>
+    <string name="textAccidentUnderReporting">Hätäkeskukseen ollaan ilmoittamassa</string>
     <string name="textAccidentReported">Hätäkeskukseen ilmoitettu - apu on tulossa!</string>
     <string name="textAccidentDetectionOn">Törmäyksen seuraaminen on päällä</string>
     <string name="textAccidentDetectionOff">Törmäyksen seuraaminen on pois päältä</string>
