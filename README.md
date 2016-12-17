@@ -1,8 +1,10 @@
 # H&auml;lytt&auml;j&auml;
 
-![Beginningscreen](https://github.com/Maustemies/Halyttaja/raw/master/Images/Screenshot_2016-12-17-23-14-27.png)
-![After pressing start](https://github.com/Maustemies/Halyttaja/raw/master/Images/Screenshot_2016-12-17-23-14-32.png)
-![Background blinks and the alarm/ringtone sounds when an accident is detected](https://github.com/Maustemies/Halyttaja/raw/master/Images/Screenshot_2016-12-17-23-14-40.png)
+<img alt="Beginning screen" src="https://github.com/Maustemies/Halyttaja/raw/master/Images/Screenshot_2016-12-17-23-14-27.png" width="200" height="400" />
+<tr />
+<img alt="After pressing start" src="https://github.com/Maustemies/Halyttaja/raw/master/Images/Screenshot_2016-12-17-23-14-32.png" width="200" height="400" />
+<tr />
+<img alt="Background blinks and the alarm/ringtone sounds when an accident is detected" src="https://github.com/Maustemies/Halyttaja/raw/master/Images/Screenshot_2016-12-17-23-14-40.png" width="200" height="400" /><br />
 
 ## Description
 This application is designed to be a safe guard for vehicular confrontations.<br />
