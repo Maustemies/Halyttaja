@@ -5,6 +5,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 
 /**
  * Created by Maustemies on 17.12.2016.
@@ -12,10 +13,14 @@ import android.hardware.SensorManager;
 
 public class CustomSensorManager extends Thread implements SensorEventListener {
 
+    private static final String LOG_TAG_CUSTOM_SENSOR_MANAGER = "CustomSensorManager";
+
     private Context mContext;
 
     public interface CustomSensorManagerInterface {
         void OnAccidentDetected();
+        void OnAccidentDetectionStarted();
+        void OnAccidentDetectionStopped();
     }
 
     private CustomSensorManagerInterface mCustomSensorManagerInterface;
@@ -23,6 +28,7 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
     private Sensor mSensor;
 
     private boolean newData = false;
+    private boolean accidentDetected = false;
     private final static int accelerationValuesArraySize = 10;
     private float[][] accelerationValues = new float[accelerationValuesArraySize][3];
     private int accelerationValuesIndex = 0;
@@ -35,6 +41,8 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
     private static final float TRIGGER_VALUE_ACCELERATION_Z = 14.2f;
 
     public CustomSensorManager(Context context, CustomSensorManagerInterface customSensorManagerInterface) {
+        Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "CustomSensorManager(Context, CustomSensorManagerInterface)");
+
         mContext = context;
         mCustomSensorManagerInterface = customSensorManagerInterface;
         mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
@@ -42,20 +50,45 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
     }
 
-    public void DisableSensorManagerListener() {
+    public void StopAccidentDetection() {
+        Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "StopAccidentDetection()");
+
         mSensorManager.unregisterListener(this);
+        mCustomSensorManagerInterface.OnAccidentDetectionStopped();
     }
 
-    public void EnableSensorManagerListener() {
+    public void StartAccidentDetection() {
+        Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "StartAccidentDetection()");
+
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
+        mCustomSensorManagerInterface.OnAccidentDetectionStarted();
+    }
+
+    private boolean threadRunning = false;
+    /**
+     * Custom method to start the thread. Calls the super.start() but sets an internal flag which is used to stop the thread.
+     */
+    public void Start() {
+        Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "Start()");
+
+        if(threadRunning) return;
+        threadRunning = true;
+        super.start();
+    }
+    /**
+     * Changes the internal flag which is used to stop the thread.
+     */
+    public void Stop() {
+        Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "Stop()");
+
+        threadRunning = false;
     }
 
     @Override
     public void run() {
+        Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "run()");
 
-        boolean accidentDetected = false;
-
-        while(true) {
+        while(threadRunning) {
             if(newData) {
                 // Iterate through the accelerationValues to see if there is an accident
                 // TODO: Think of/implement the real, applicable, algorithm
@@ -87,6 +120,8 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "onSensorChanged(SensorEvent)");
+
         /**
          * Algorithm taken from https://developer.android.com/guide/topics/sensors/sensors_motion.html
          */
@@ -114,6 +149,7 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "onAccuracyChanged(Sensor, int)");
 
     }
 }
