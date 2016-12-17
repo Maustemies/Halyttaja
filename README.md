@@ -1,4 +1,4 @@
-# Halyttaja
+# H&auml;lytt&auml;j&auml;
 
 ## Description
 This application is designed to be a safe guard for vehicular confrontations.<br />
