@@ -16,7 +16,10 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements CustomSensorManager.CustomSensorManagerInterface, AlarmManager.AlarmManagerInterface {
+
+    private AlarmManager alarmManager;
+    private CustomSensorManager customSensorManager;
 
     private RelativeLayout relativeLayout;
     private Button buttonStartStop;
@@ -29,7 +32,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         InitViews();
-        //alarmManager = new AlarmManager();
+        alarmManager = new AlarmManager(getApplicationContext(), this);
+        customSensorManager = new CustomSensorManager(getApplicationContext(), this);
+
+        UiUpdateAdvicePressStartToBegin();
     }
 
     private void InitViews() {
@@ -47,15 +53,29 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void OnAccidentDetected() {
+        if(!alarmManager.AlarmIsOn()) alarmManager.StartAlarm();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                UiOnAccidentDetected();
+            }
+        });
+    }
+
     private void OnButtonStartStopClicked() {
-        /*
-        if(alarmManager.alarmOn) {
+        if(alarmManager.AlarmIsOn()) {
+            customSensorManager.DisableSensorManagerListener();
+            alarmManager.StopAlarm();
             UiOnAccidentDetectionTurnedOff();
+            UiUpdateAdvicePressStartToBegin();
         }
         else {
+            customSensorManager.EnableSensorManagerListener();
             UiOnAccidentDetectionTurnedOn();
+            UiUpdateAdvicePressStopToStop();
         }
-        */
     }
 
     private void UiOnAccidentDetected() {
@@ -87,5 +107,34 @@ public class MainActivity extends AppCompatActivity {
 
     private void UiUpdateAdvicePressStopToStop() {
         textViewAdvice.setText(R.string.textAdvicePressStopToStopDetection);
+    }
+
+    @Override
+    protected void onResume() {
+        if(customSensorManager == null) return;
+
+        customSensorManager.EnableSensorManagerListener();
+    }
+
+    @Override
+    protected void onPause() {
+        if(customSensorManager == null) return;
+
+        customSensorManager.DisableSensorManagerListener();
+    }
+
+    @Override
+    public void OnAlarmExpired() {
+        // TODO: Start accident reporting
+    }
+
+    @Override
+    public void OnAlarmTick(final int secondsLeft) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                UiUpdateAlarmTimeLeft(secondsLeft);
+            }
+        });
     }
 }
