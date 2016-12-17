@@ -132,14 +132,14 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         Log.d(LOG_TAG_MAIN_ACTIVITY, "UiOnAccidentDetectionTurnedOn()");
 
         textViewStatus.setText(R.string.textAccidentDetectionOn);
-        buttonStartStop.setText(R.string.buttonStop);
+        buttonStartStop.setBackgroundResource(R.drawable.button_stop_texture);
     }
 
     private void UiOnAccidentDetectionTurnedOff() {
         Log.d(LOG_TAG_MAIN_ACTIVITY, "UiOnAccidentDetectionTurnedOff()");
 
         textViewStatus.setText(R.string.textAccidentDetectionOff);
-        buttonStartStop.setText(R.string.buttonStart);
+        buttonStartStop.setBackgroundResource(R.drawable.button_start_texture);
     }
 
     private void UiUpdateAlarmTimeLeft(int seconds) {
