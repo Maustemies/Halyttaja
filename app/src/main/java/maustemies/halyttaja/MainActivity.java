@@ -16,7 +16,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements CustomSensorManager.CustomSensorManagerInterface {
+public class MainActivity extends AppCompatActivity implements CustomSensorManager.CustomSensorManagerInterface, AlarmManager.AlarmManagerInterface {
 
     private AlarmManager alarmManager;
     private CustomSensorManager customSensorManager;
@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         setContentView(R.layout.activity_main);
 
         InitViews();
-        alarmManager = new AlarmManager();
+        alarmManager = new AlarmManager(getApplicationContext(), this);
         customSensorManager = new CustomSensorManager(getApplicationContext(), this);
 
         UiUpdateAdvicePressStartToBegin();
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
 
     @Override
     public void OnAccidentDetected() {
-        if(!alarmManager.alarmOn) alarmManager.StartAlarm();
+        if(!alarmManager.AlarmIsOn()) alarmManager.StartAlarm();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -65,13 +65,16 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
     }
 
     private void OnButtonStartStopClicked() {
-        if(alarmManager.alarmOn) {
+        if(alarmManager.AlarmIsOn()) {
             customSensorManager.DisableSensorManagerListener();
+            alarmManager.StopAlarm();
             UiOnAccidentDetectionTurnedOff();
+            UiUpdateAdvicePressStartToBegin();
         }
         else {
             customSensorManager.EnableSensorManagerListener();
             UiOnAccidentDetectionTurnedOn();
+            UiUpdateAdvicePressStopToStop();
         }
     }
 
@@ -118,5 +121,20 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         if(customSensorManager == null) return;
 
         customSensorManager.DisableSensorManagerListener();
+    }
+
+    @Override
+    public void OnAlarmExpired() {
+        // TODO: Start accident reporting
+    }
+
+    @Override
+    public void OnAlarmTick(final int secondsLeft) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                UiUpdateAlarmTimeLeft(secondsLeft);
+            }
+        });
     }
 }
