@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         Log.d(LOG_TAG_MAIN_ACTIVITY, "UiOnAccidentDetected()");
 
         // Start a thread that brings the app to the foreground so that the user won't miss the alarm going off
-        new ApplicationEnforcer().start();
+        //new ApplicationEnforcer().start();
 
         textViewStatus.setText(R.string.textAccidentDetected);
         textViewAdvice.setText(R.string.textAdvicePressStopToStopAlarm);

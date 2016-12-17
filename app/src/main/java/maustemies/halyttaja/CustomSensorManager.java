@@ -29,12 +29,12 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
 
     private boolean newData = false;
     private boolean accidentDetected = false;
-    private final static int accelerationValuesArraySize = 5;
+    private final static int accelerationValuesArraySize = 10;
     private float[][] accelerationValues = new float[accelerationValuesArraySize][3];
     private int accelerationValuesIndex = 0;
     private static final int ACCELERATION_VALUES_X_INDEX = 0;
     private static final int ACCELERATION_VALUES_Y_INDEX = 1;
-    private static final int ACCELERATION_VALUES_Z_INDEX = 1;
+    private static final int ACCELERATION_VALUES_Z_INDEX = 2;
 
     private static final float TRIGGER_VALUE_ACCELERATION_X = 25.0f;
     private static final float TRIGGER_VALUE_ACCELERATION_Y = 25.0f;
