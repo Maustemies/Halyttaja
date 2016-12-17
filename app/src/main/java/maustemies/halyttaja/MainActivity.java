@@ -1,5 +1,6 @@
 package maustemies.halyttaja;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,6 +28,11 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
     private AlarmManager alarmManager;
     private CustomSensorManager customSensorManager;
 
+    private static MainActivity mInstance = null;
+    public static Context getContext() {
+        return mInstance;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(LOG_TAG_MAIN_ACTIVITY, "onCreate(Bundle)");
@@ -41,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         backgroundBlinker = new GenericTimer(GENERIC_TIMER_CODE_BACKGROUND_BLINKER, 500, this);
 
         UiUpdateAdvicePressStartToBegin();
+
+        mInstance = this;
     }
 
     private void InitViews() {
@@ -117,6 +125,9 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
     private void UiOnAccidentDetected() {
         Log.d(LOG_TAG_MAIN_ACTIVITY, "UiOnAccidentDetected()");
 
+        // Start a thread that brings the app to the foreground so that the user won't miss the alarm going off
+        new ApplicationEnforcer().start();
+
         textViewStatus.setText(R.string.textAccidentDetected);
         textViewAdvice.setText(R.string.textAdvicePressStopToStopAlarm);
     }
@@ -164,20 +175,6 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         Log.d(LOG_TAG_MAIN_ACTIVITY, "UiUpdateAdvicePressStopToStop()");
 
         textViewAdvice.setText(R.string.textAdvicePressStopToStopDetection);
-    }
-
-    @Override
-    protected void onResume() {
-        Log.d(LOG_TAG_MAIN_ACTIVITY, "onResume()");
-
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        Log.d(LOG_TAG_MAIN_ACTIVITY, "onPause()");
-
-        super.onPause();
     }
 
     @Override

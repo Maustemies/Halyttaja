@@ -5,7 +5,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Debug;
 import android.util.Log;
 
 /**
@@ -37,9 +36,9 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
     private static final int ACCELERATION_VALUES_Y_INDEX = 1;
     private static final int ACCELERATION_VALUES_Z_INDEX = 1;
 
-    private static final float TRIGGER_VALUE_ACCELERATION_X = 18.0f;
-    private static final float TRIGGER_VALUE_ACCELERATION_Y = 18.0f;
-    private static final float TRIGGER_VALUE_ACCELERATION_Z = 18.0f;
+    private static final float TRIGGER_VALUE_ACCELERATION_X = 25.0f;
+    private static final float TRIGGER_VALUE_ACCELERATION_Y = 25.0f;
+    private static final float TRIGGER_VALUE_ACCELERATION_Z = 25.0f;
 
     public CustomSensorManager(Context context, CustomSensorManagerInterface customSensorManagerInterface) {
         Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "CustomSensorManager(Context, CustomSensorManagerInterface)");
