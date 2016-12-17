@@ -171,8 +171,6 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         Log.d(LOG_TAG_MAIN_ACTIVITY, "onResume()");
 
         super.onResume();
-
-        if (customSensorManager != null && userInitiatedDetection) customSensorManager.StartAccidentDetection();
     }
 
     @Override
@@ -180,8 +178,6 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         Log.d(LOG_TAG_MAIN_ACTIVITY, "onPause()");
 
         super.onPause();
-
-        if (customSensorManager != null && userInitiatedDetection) customSensorManager.StopAccidentDetection();
     }
 
     @Override
