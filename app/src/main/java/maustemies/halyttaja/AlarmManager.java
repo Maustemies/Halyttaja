@@ -13,6 +13,8 @@ import android.util.Log;
 
 public class AlarmManager extends Thread {
 
+    private static final String LOG_TAG_ALARM_MANAGER = "AlarmManager";
+
     private static final int SECONDS_TO_WAIT_FOR_CANCELLATION = 60;
 
     public interface AlarmManagerInterface {
@@ -25,7 +27,10 @@ public class AlarmManager extends Thread {
         IDLE, TIMER_TO_BE_STARTED, TIMER_TO_BE_STOPPED, TIMER_RUNNING, TIMER_EXPIRED
     }
     private AlarmStatus alarmStatus;
+    private int secondsToWait = SECONDS_TO_WAIT_FOR_CANCELLATION;
     public boolean AlarmIsOn() {
+        Log.d(LOG_TAG_ALARM_MANAGER, "AlarmIsOn() returning: " + (alarmStatus == AlarmStatus.TIMER_RUNNING));
+
         return (alarmStatus == AlarmStatus.TIMER_RUNNING);
     }
 
@@ -34,8 +39,11 @@ public class AlarmManager extends Thread {
     private Context mContext;
 
     public AlarmManager(Context context, AlarmManagerInterface alarmManagerInterface) {
+        Log.d(LOG_TAG_ALARM_MANAGER, "AlarmManager(Context, AlarmManagerInterface)");
+
         mContext = context;
         mAlarmManagerInterface = alarmManagerInterface;
+        alarmStatus = AlarmStatus.IDLE;
 
         alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
         if(alarmUri == null) alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE);
@@ -43,12 +51,31 @@ public class AlarmManager extends Thread {
         ringtone = RingtoneManager.getRingtone(mContext, alarmUri);
     }
 
+    private boolean threadRunning = false;
+    /**
+     * Custom method to start the thread. Calls the super.start() but sets an internal flag which is used to stop the thread.
+     */
+    public void Start() {
+        Log.d(LOG_TAG_ALARM_MANAGER, "Start()");
+
+        if(threadRunning) return;
+        threadRunning = true;
+        super.start();
+    }
+    /**
+     * Changes the internal flag which is used to stop the thread.
+     */
+    public void Stop() {
+        Log.d(LOG_TAG_ALARM_MANAGER, "Stop()");
+
+        threadRunning = false;
+    }
+
     @Override
     public void run() {
+        Log.d(LOG_TAG_ALARM_MANAGER, "run()");
 
-        int secondsToWait = SECONDS_TO_WAIT_FOR_CANCELLATION;
-
-        while(true) {
+        while(threadRunning) {
             switch (alarmStatus) {
                 case IDLE:
                 {
@@ -105,10 +132,14 @@ public class AlarmManager extends Thread {
     }
 
     public void StartAlarm() {
+        Log.d(LOG_TAG_ALARM_MANAGER, "StartAlarm()");
+
         alarmStatus = AlarmStatus.TIMER_TO_BE_STARTED;
     }
 
     public void StopAlarm() {
+        Log.d(LOG_TAG_ALARM_MANAGER, "StopAlarm()");
+
         alarmStatus = AlarmStatus.TIMER_TO_BE_STOPPED;
     }
 }
