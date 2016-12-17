@@ -29,16 +29,16 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
 
     private boolean newData = false;
     private boolean accidentDetected = false;
-    private final static int accelerationValuesArraySize = 10;
+    private final static int accelerationValuesArraySize = 5;
     private float[][] accelerationValues = new float[accelerationValuesArraySize][3];
     private int accelerationValuesIndex = 0;
     private static final int ACCELERATION_VALUES_X_INDEX = 0;
     private static final int ACCELERATION_VALUES_Y_INDEX = 1;
     private static final int ACCELERATION_VALUES_Z_INDEX = 1;
 
-    private static final float TRIGGER_VALUE_ACCELERATION_X = 10.2f;
-    private static final float TRIGGER_VALUE_ACCELERATION_Y = 12.2f;
-    private static final float TRIGGER_VALUE_ACCELERATION_Z = 14.2f;
+    private static final float TRIGGER_VALUE_ACCELERATION_X = 25.0f;
+    private static final float TRIGGER_VALUE_ACCELERATION_Y = 25.0f;
+    private static final float TRIGGER_VALUE_ACCELERATION_Z = 25.0f;
 
     public CustomSensorManager(Context context, CustomSensorManagerInterface customSensorManagerInterface) {
         Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "CustomSensorManager(Context, CustomSensorManagerInterface)");
@@ -48,11 +48,14 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
         mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
+
+        super.start();
     }
 
     public void StopAccidentDetection() {
         Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "StopAccidentDetection()");
 
+        Stop();
         mSensorManager.unregisterListener(this);
         mCustomSensorManagerInterface.OnAccidentDetectionStopped();
     }
@@ -60,36 +63,36 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
     public void StartAccidentDetection() {
         Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "StartAccidentDetection()");
 
+        Start();
         mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
         mCustomSensorManagerInterface.OnAccidentDetectionStarted();
     }
 
-    private boolean threadRunning = false;
+    private boolean functionalityOn = false;
     /**
      * Custom method to start the thread. Calls the super.start() but sets an internal flag which is used to stop the thread.
      */
-    public void Start() {
+    private void Start() {
         Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "Start()");
 
-        if(threadRunning) return;
-        threadRunning = true;
-        super.start();
+        if(functionalityOn) return;
+        functionalityOn = true;
     }
     /**
      * Changes the internal flag which is used to stop the thread.
      */
-    public void Stop() {
+    private void Stop() {
         Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "Stop()");
 
-        threadRunning = false;
+        functionalityOn = false;
     }
 
     @Override
     public void run() {
         Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "run()");
 
-        while(threadRunning) {
-            if(newData) {
+        while(true) {
+            if(newData && functionalityOn) {
                 // Iterate through the accelerationValues to see if there is an accident
                 // TODO: Think of/implement the real, applicable, algorithm
                 float changesX = 0.0f;
@@ -97,16 +100,16 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
                 float changesZ = 0.0f;
 
                 for(int i = 0; i < accelerationValuesArraySize; i++) {
-                    changesX += accelerationValues[i][ACCELERATION_VALUES_X_INDEX];
-                    changesY += accelerationValues[i][ACCELERATION_VALUES_Y_INDEX];
-                    changesZ += accelerationValues[i][ACCELERATION_VALUES_Z_INDEX];
+                    changesX += Math.abs(accelerationValues[i][ACCELERATION_VALUES_X_INDEX]);
+                    changesY += Math.abs(accelerationValues[i][ACCELERATION_VALUES_Y_INDEX]);
+                    changesZ += Math.abs(accelerationValues[i][ACCELERATION_VALUES_Z_INDEX]);
                 }
 
-                changesX = Math.abs(changesX/accelerationValuesArraySize);
-                changesY = Math.abs(changesY/accelerationValuesArraySize);
-                changesZ = Math.abs(changesZ/accelerationValuesArraySize);
+                changesX = changesX/accelerationValuesArraySize;
+                changesY = changesY/accelerationValuesArraySize;
+                changesZ = changesZ/accelerationValuesArraySize;
 
-                if( (changesX >= TRIGGER_VALUE_ACCELERATION_X) && (changesY >= TRIGGER_VALUE_ACCELERATION_Y) && (changesZ >= TRIGGER_VALUE_ACCELERATION_Z))
+                if( (changesX >= TRIGGER_VALUE_ACCELERATION_X) || (changesY >= TRIGGER_VALUE_ACCELERATION_Y) || (changesZ >= TRIGGER_VALUE_ACCELERATION_Z))
                     accidentDetected = true;
 
                 if(accidentDetected) {
@@ -120,26 +123,10 @@ public class CustomSensorManager extends Thread implements SensorEventListener {
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "onSensorChanged(SensorEvent)");
+        //Log.d(LOG_TAG_CUSTOM_SENSOR_MANAGER, "onSensorChanged(SensorEvent) with new values: " + event.values[0] + ", " + event.values[1] + ", " + event.values[2]);
 
-        /**
-         * Algorithm taken from https://developer.android.com/guide/topics/sensors/sensors_motion.html
-         */
-        // In this example, alpha is calculated as t / (t + dT),
-        // where t is the low-pass filter's time-constant and
-        // dT is the event delivery rate.
-
-        final float alpha = 0.8f;
-        float[] gravity = new float[3];
-
-        // Isolate the force of gravity with the low-pass filter.
-        gravity[ACCELERATION_VALUES_X_INDEX] = alpha * gravity[ACCELERATION_VALUES_X_INDEX] + (1 - alpha) * event.values[ACCELERATION_VALUES_X_INDEX];
-        gravity[ACCELERATION_VALUES_Y_INDEX] = alpha * gravity[ACCELERATION_VALUES_Y_INDEX] + (1 - alpha) * event.values[ACCELERATION_VALUES_Y_INDEX];
-        gravity[ACCELERATION_VALUES_Z_INDEX] = alpha * gravity[ACCELERATION_VALUES_Z_INDEX] + (1 - alpha) * event.values[ACCELERATION_VALUES_Z_INDEX];
-
-        // Remove the gravity contribution with the high-pass filter.
         for(int i = 0; i < 3; i++) {
-            accelerationValues[accelerationValuesIndex][i] = event.values[i] - gravity[i];
+            accelerationValues[accelerationValuesIndex][i] = event.values[i];
         }
 
         accelerationValuesIndex++;
