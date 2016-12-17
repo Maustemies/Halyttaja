@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         InitViews();
         alarmManager = new AlarmManager();
         customSensorManager = new CustomSensorManager(getApplicationContext(), this);
+
+        UiUpdateAdvicePressStartToBegin();
     }
 
     private void InitViews() {
