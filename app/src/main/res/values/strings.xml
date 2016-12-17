@@ -14,5 +14,6 @@
 
     <!-- Advice text cases -->
     <string name="textAdvicePressStartToBeginDetection">Paina Aloita - aloita törmäyksen seuraaminen</string>
-    <string name="textAdvicePressStopToStopDetection">Paina Pysäytä - pysäytä hälytys</string>
+    <string name="textAdvicePressStopToStopDetection">Paina Lopeta - lopeta törmäyksen seuraaminen</string>
+    <string name="textAdvicePressStopToStopAlarm">Paina Lopeta - lopeta hälytys</string>
 </resources>

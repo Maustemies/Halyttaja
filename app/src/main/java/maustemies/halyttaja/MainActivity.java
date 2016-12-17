@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
 
         if (alarmManager != null && !alarmManager.AlarmIsOn()) alarmManager.StartAlarm();
         if (backgroundBlinker != null) {
+            showNormalColor = false;
             backgroundBlinkingOn = true;
             backgroundBlinker.Start();
         }
@@ -117,9 +118,7 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         Log.d(LOG_TAG_MAIN_ACTIVITY, "UiOnAccidentDetected()");
 
         textViewStatus.setText(R.string.textAccidentDetected);
-        if (backgroundBlinker != null)
-            showNormalColor = false;
-            backgroundBlinker.Start();
+        textViewAdvice.setText(R.string.textAdvicePressStopToStopAlarm);
     }
 
     private void UiOnAccidentReported() {
