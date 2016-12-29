@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
     private static final String LOG_TAG_MAIN_ACTIVITY = "MainActivity";
 
     private boolean userInitiatedDetection = false;
+	private boolean applicationOnBackground = false;
 
     private Button buttonStartStop;
     private TextView textViewStatus;
@@ -50,6 +51,22 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
 
         mInstance = this;
     }
+	
+	@Override
+	protected void onPause() {
+		Log.d(LOG_TAG_MAIN_ACTIVITY, "onPause()");
+		
+		super.onPause();
+		applicationOnBackground = true;
+	}
+	
+	@Override
+	protected void onResume() {
+		Log.d(LOG_TAG_MAIN_ACTIVITY, "onPause()");
+		
+		super.onPause();
+		applicationOnBackground = false;		
+	}
 
     private void InitViews() {
         Log.d(LOG_TAG_MAIN_ACTIVITY, "InitViews()");
@@ -126,7 +143,10 @@ public class MainActivity extends AppCompatActivity implements CustomSensorManag
         Log.d(LOG_TAG_MAIN_ACTIVITY, "UiOnAccidentDetected()");
 
         // Start a thread that brings the app to the foreground so that the user won't miss the alarm going off
-        //new ApplicationEnforcer().start();
+		if(applicationOnBackground) {
+			new ApplicationEnforcer().start();
+			applicationOnBackground = false;
+		}
 
         textViewStatus.setText(R.string.textAccidentDetected);
         textViewAdvice.setText(R.string.textAdvicePressStopToStopAlarm);
